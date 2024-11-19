@@ -27,29 +27,32 @@ class Person {
 	// Note: when deserializing, constructor will be called with no arguments.
 	// The properties will be set by the deserializer later.
 	// You can check if the first argument is undefined to know if it's a deserialization.
-	constructor(name, age) {  
+	constructor(name, age, friends) {  
 		this.name = name;
 		this.age = age;
+		this.friends = friends ?? [];
 	}
 
 	greet() {
-		console.log(`Hello, my name is ${this.name} and I am ${this.age} years old.`);
+		console.log(`Hello, my name is ${this.name} and I am ${this.age} years old. My friends are:`);
+		this.friends.forEach(friend => console.log(`- ${friend}`));
 	}
 
 	// Tell structpack how to serialize and deserialize this class
 	static typedef = [
 		{ field: 'name', type: BASIC_TYPES.str },
 		{ field: 'age', type: BASIC_TYPES.u8 },
-	]
+		{ field: 'friends', type: BASIC_TYPES.array(BASIC_TYPES.str) },
+	];
 }
 
 // Serialize an instance of Person to binary
 // Returns a Buffer in Node.js (Polyfilled in browser)
-const binary = serializeToBinary(new Person('Alice', 30), Person);
+const binary = serializeToBinary(new Person('Alice', 30, ['Bob', 'Charlie']), Person);
 
 // Deserialize the binary to an instance of Person
 const alice = deserializeFromBinary(binary, Person);
-alice.greet(); // Hello, my name is Alice and I am 30 years old.
+alice.greet(); // Hello, my name is Alice and I am 30 years old. My friends are: - Bob - Charlie
 ```
 
 ## API
@@ -59,13 +62,13 @@ This library is simple, and only has two functions:
 ### `serializeToBinary`
 
 ```js
-serializeToBinary(value, typedef)
+serializeToBinary(value, type)
 ```
 
 ### `deserializeFromBinary`
 
 ```js
-deserializeFromBinary(binary, typedef)
+deserializeFromBinary(buffer, type)
 ```
 
 ### Types
@@ -132,7 +135,7 @@ import { stringify, parse, v4 as uuidv4 } from 'uuid';
 
 // Then, you define your custom type handle extending BaseTypeHandler
 class UUIDHandler extends BaseTypeHandler {
-    // In this case, we don't need a constructor
+	// In this case, we don't need a constructor
 	// But you can use it to pass arguments to your custom type
 
 	// This method is called when serializing
@@ -146,8 +149,8 @@ class UUIDHandler extends BaseTypeHandler {
 	// This method is called when serializing
 	// It should return the serialized value
 	serialize(view, offset, value) {
-	    // view is a DataView object, refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView
-	    // offset is the offset in the buffer where the value should be serialized
+		// view is a DataView object, refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView
+		// offset is the offset in the buffer where the value should be serialized
 
 		const buf = parse(value);
 		for (let i = 0; i < 16; i++) {
@@ -178,23 +181,23 @@ console.log(deserialized); // 50f4696d-6561-4195-865a-2b9fb35ad136
 
 // We can also use it in a struct
 class Account {
-    constructor(name, balance) {
-        if (name === undefined) {
+	constructor(name, balance) {
+		if (name === undefined) {
 			// Deserialization, do nothing and wait for the deserializer to fill the properties
-            return;
-        }
+			return;
+		}
 
-        this.name = name;
-        this.balance = balance;
+		this.name = name;
+		this.balance = balance;
 		
 		// create a new uuid
 		this.id = uuidv4();
-    }
+	}
 
-    // You can add methods to the class, whatever you want
-    deposit(amount) {
-        this.balance += amount;
-    }
+	// You can add methods to the class, whatever you want
+	deposit(amount) {
+		this.balance += amount;
+	}
 
 	// Don't forget to add the typedef
 	static typedef = [

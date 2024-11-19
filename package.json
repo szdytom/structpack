@@ -15,7 +15,7 @@
 		"serialization",
 		"serializer"
 	],
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "A lightweight library for binary serialization and deserialization of custom JavaScript classes in a declative way",
 	"repository": {
 		"type": "git",
