@@ -1,0 +1,24 @@
+{
+	"name": "structpack",
+	"type": "module",
+	"main": "lib/index.mjs",
+	"dependencies": {
+		"buffer": "^6.0.3"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "fang_erj",
+		"email": "szdytom@qq.com"
+	},
+	"keywords": [
+		"binary",
+		"serialization",
+		"serializer"
+	],
+	"version": "0.0.1",
+	"description": "A binary serialization library for JavaScript",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/szdytom/structpack.git"
+	}
+}
