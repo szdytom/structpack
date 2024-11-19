@@ -16,7 +16,7 @@
 		"serializer"
 	],
 	"version": "0.0.1",
-	"description": "A binary serialization library for JavaScript",
+	"description": "A lightweight library for binary serialization and deserialization of custom JavaScript classes in a declative way",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/szdytom/structpack.git"
