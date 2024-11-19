@@ -20,5 +20,11 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/szdytom/structpack.git"
+	},
+	"scripts": {
+		"test": "mocha tests"
+	},
+	"devDependencies": {
+		"mocha": "^10.8.2"
 	}
 }
