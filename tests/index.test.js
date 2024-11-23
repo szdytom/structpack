@@ -130,21 +130,21 @@ describe('binary-struct', () => {
 	describe('deserializeFromBinary', () => {
 		it('type i8', () => {
 			let binary_data = new Uint8Array([0x85]).buffer;
-			let res = deserializeFromBinary(new DataView(binary_data), BASIC_TYPES.i8);
+			let res = deserializeFromBinary(binary_data, BASIC_TYPES.i8);
 			let ans = -123;
 			assert.equal(res, ans);
 		});
 
 		it('type i16', () => {
 			let binary_data = new Uint8Array([0xc7, 0xcf]).buffer;
-			let res = deserializeFromBinary(new DataView(binary_data), BASIC_TYPES.i16);
+			let res = deserializeFromBinary(binary_data, BASIC_TYPES.i16);
 			let ans = -12345;
 			assert.equal(res, ans);
 		});
 
 		it('type i32', () => {
 			let binary_data = new Uint8Array([0x2e, 0xfd, 0x69, 0xb6]).buffer;
-			let res = deserializeFromBinary(new DataView(binary_data), BASIC_TYPES.i32);
+			let res = deserializeFromBinary(new Uint8Array(binary_data), BASIC_TYPES.i32);
 			let ans = -1234567890;
 			assert.equal(res, ans);
 		});
