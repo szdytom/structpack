@@ -124,7 +124,7 @@ Anything that is not a basic type must be defined with a `typedef` array.
 
 ### Advanced Usage
 
-You can also define your own types with a custom serializer and deserializer. For instance, let's say we want to define a custom type that serializes a string to a 16-byte buffer.
+You can also define your own types with a custom serializer and deserializer. For instance, let's say we want to define a custom type that serializes a UUID to a 16-byte buffer.
 
 ```js
 // First, you import these classes
