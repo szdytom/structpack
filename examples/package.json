@@ -1,0 +1,8 @@
+{
+	"name": "structpack-examples",
+	"type": "module",
+	"dependencies": {
+		"structpack": "file:../",
+		"uuid": "^11.0.3"
+	}
+}

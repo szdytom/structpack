@@ -20,6 +20,7 @@ npm i --save structpack
 Here is an example of how to use structpack to serialize and deserialize a class:
 
 ```js
+// See examples/quickstart.js
 import { BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
 
 // Define a normal class with some properties and methods whatever you want
@@ -76,16 +77,17 @@ deserializeFromBinary(buffer, type)
 It supports the following basic types:
 
 ```js
-// Signed Integers
+// Integers with different sizes, repersented as Number in JavaScript
 BASIC_TYPES.i8
-BASIC_TYPES.i16
-BASIC_TYPES.i32
-BASIC_TYPES.i64
-
-// Unsigned Integers
 BASIC_TYPES.u8
+BASIC_TYPES.i16
 BASIC_TYPES.u16
+BASIC_TYPES.i32
 BASIC_TYPES.u32
+
+// 64-bit integers are represented as BigInt in JavaScript, IT DON"T ACCEPT NUMBERS!
+// Refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
+BASIC_TYPES.i64
 BASIC_TYPES.u64
 
 // Floating Point Numbers
@@ -127,6 +129,7 @@ Anything that is not a basic type must be defined with a `typedef` array.
 You can also define your own types with a custom serializer and deserializer. For instance, let's say we want to define a custom type that serializes a UUID to a 16-byte buffer.
 
 ```js
+// See examples/customtype.js
 // First, you import these classes
 import { BaseTypeHandler, DeserializedResult, BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
 
@@ -154,7 +157,7 @@ class UUIDHandler extends BaseTypeHandler {
 
 		const buf = parse(value);
 		for (let i = 0; i < 16; i++) {
-			view.setUint8(offset + i, buf.readUInt8(i));
+			view.setUint8(offset + i, buf[i]);
 		}
 
 		// Return the offset of the next value
@@ -203,13 +206,13 @@ class Account {
 	static typedef = [
 		{ field: 'id', type: UUIDType },
 		{ field: 'name', type: BASIC_TYPES.str },
-		{ field: 'balance', type: BASIC_TYPES.i64 },
+		{ field: 'balance', type: BASIC_TYPES.i32 },
 	];
 }
 
 // Now we can serialize and deserialize the Account class
-const binary = serializeToBinary(new Account('Thomas Sledison', 1000), Account);
-const thomas = deserializeFromBinary(binary, Account);
+const binary2 = serializeToBinary(new Account('Thomas Sledison', 1000), Account);
+const thomas = deserializeFromBinary(binary2, Account);
 
 console.log(thomas.name); // Thomas Sledison
 console.log(thomas.balance); // 1000
