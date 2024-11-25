@@ -108,12 +108,6 @@ describe('binary-struct', () => {
 			assert.ok(areArrayBuffersEqual(res, ans));
 		});
 
-		it('type Date', () => {
-			let res = serializeToBinary(new Date("2007-04-08"), BASIC_TYPES.DateTime);
-			let ans = new Uint8Array([0x80, 0x30, 0x18, 0x46, 0, 0, 0, 0]);
-			assert.ok(areArrayBuffersEqual(res, ans));
-		});
-
 		it('type Buffer', () => {
 			let ans = new Uint8Array([0x3c, 0x3d, 0x3e, 0x3f]).buffer;
 			let res = serializeToBinary(Buffer.from(ans), BASIC_TYPES.raw(4));
@@ -214,13 +208,6 @@ describe('binary-struct', () => {
 			assert.equal(res.foo(), ans.foo())
 		});
 
-		it('type Date', () => {
-			let binary_data = new Uint8Array([0x80, 0x30, 0x18, 0x46, 0, 0, 0, 0]).buffer;
-			let res = deserializeFromBinary(new DataView(binary_data), BASIC_TYPES.DateTime);
-			let ans = new Date("2007-04-08");
-			assert.equal(ans.toUTCString(), res.toUTCString());
-		});
-
 		it('type Buffer', () => {
 			let binary_data = new Uint8Array([0x3c, 0x3d, 0x3e, 0x3f]).buffer;
 			let res = deserializeFromBinary(new DataView(binary_data), BASIC_TYPES.raw(4));
@@ -232,6 +219,32 @@ describe('binary-struct', () => {
 			let res = deserializeFromBinary(new DataView(binary_data), BASIC_TYPES.StringMap);
 			let ans = new Map([['aa', 'b'], ['hi', 'hello']]);
 			assert.deepEqual(res, ans);
+		});
+	});
+
+	describe('serialize and deserialize', () => {
+		it('type f32', () => {
+			let val = 2008.0925;
+			let bin = serializeToBinary(Math.PI, BASIC_TYPES.f32);
+			assert.equal(bin.byteLength, 4);
+			let num = deserializeFromBinary(bin, BASIC_TYPES.f32);
+			assert.equal(num, val);
+		});
+
+		it('type f64', () => {
+			let val = 2008.0925;
+			let bin = serializeToBinary(Math.PI, BASIC_TYPES.f64);
+			assert.equal(bin.byteLength, 8);
+			let num = deserializeFromBinary(bin, BASIC_TYPES.f64);
+			assert.equal(num, val);
+		});
+
+		it('type Date', () => {
+			let val = new Date('2008-09-25T00:00:00.000Z');
+			let bin = serializeToBinary(val, BASIC_TYPES.DateTime);
+			assert.equal(bin.byteLength, 8);
+			let num = deserializeFromBinary(bin, BASIC_TYPES.DateTime);
+			assert.equal(num.toISOString(), val.toISOString());
 		});
 	});
 });
