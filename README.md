@@ -126,6 +126,8 @@ Anything that is not a basic type must be defined with a `typedef` array.
 
 ### Advanced Usage
 
+#### Custom Types
+
 You can also define your own types with a custom serializer and deserializer. For instance, let's say we want to define a custom type that serializes a UUID to a 16-byte buffer.
 
 ```js
@@ -165,7 +167,7 @@ class UUIDHandler extends BaseTypeHandler {
 	}
 
 	// This method is called when deserializing
-	// It should return a DeserializedResult object
+	// It should return a DeserializedResult object ({ value, offset })
 	deserialize(view, offset) {
 		const buf = Buffer.from(view.buffer, offset, 16);
 
@@ -219,6 +221,80 @@ console.log(thomas.balance); // 1000
 console.log(thomas.id); // (random uuid) notable that the id is a string but not a buffer
 ```
 
+#### Serialize into a DataView directly
+
+If you already have a DataView object, or you want to serialize to a certain offset, you can call the `serialize` method directly.
+
+```js
+// See examples/direct.js
+import { BASIC_TYPES, CompoundTypeHandler, deserializeFromBinary } from 'structpack';
+
+// For built-in types or your custom types
+const view = new DataView(new ArrayBuffer(100));
+BASIC_TYPES.str.serialize(view, 0, 'Hello, world!');
+console.log(deserializeFromBinary(view, BASIC_TYPES.str));
+
+// For structs, you need to create a CompoundTypeHandler
+class Vec2 {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	toString() {
+		return `(${this.x}, ${this.y})`;
+	}
+
+	static typedef = [
+		{ field: 'x', type: BASIC_TYPES.f32 },
+		{ field: 'y', type: BASIC_TYPES.f32 },
+	];
+}
+
+const p = new Vec2(1, 2);
+const handler = new CompoundTypeHandler(Vec2);
+handler.serialize(view, 50, p);
+
+console.log(deserializeFromBinary(new DataView(view.buffer, 50), handler));
+```
+
+You can also call the `deserialize` method directly, but usually you don't need to do that. To deserialize at certain offset, you can just construct a new DataView with the offset, see [DataView constructor at MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/DataView).
+
+#### Delegate to another type
+
+When you are defining a custom type, It's sometimes convenient to delegate to another type. For example, let's say for some reason we want to serialize an object into JSON and save it as a string.
+
+```js
+// See examples/delegate.js
+import { BaseTypeHandler, BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
+
+class JSONHandler extends BaseTypeHandler {
+	sizeof(value) {
+		const json = JSON.stringify(value);
+		return BASIC_TYPES.str.sizeof(json); // delegate to the string handler
+	}
+
+	serialize(view, offset, value) {
+		const json = JSON.stringify(value);
+		return BASIC_TYPES.str.serialize(view, offset, json); // delegate to the string handler
+	}
+
+	deserialize(view, offset) {
+		const res = BASIC_TYPES.str.deserialize(view, offset); // delegate to the string handler
+		// res is a DeserializedResult object, let's parse the value
+		res.value = JSON.parse(res.value);
+		return res;
+	}
+}
+
+const JSONType = new JSONHandler();
+
+const obj = { a: 1, b: 'hello' };
+const binary = serializeToBinary(obj, JSONType);
+const deserialized = deserializeFromBinary(binary, JSONType);
+console.log(deserialized); // { a: 1, b: 'hello' }
+```
+
 ## Limitations
 
 - The serialization and deserialization process is not destroying the original object, so if you modify the object after serialization, the deserialization process will not be able to detect the changes.
@@ -226,7 +302,7 @@ console.log(thomas.id); // (random uuid) notable that the id is a string but not
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements.
+Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements. See the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information.
 
 ## Licenses
 
