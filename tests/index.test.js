@@ -225,15 +225,15 @@ describe('binary-struct', () => {
 	describe('serialize and deserialize', () => {
 		it('type f32', () => {
 			let val = 2008.0925;
-			let bin = serializeToBinary(Math.PI, BASIC_TYPES.f32);
+			let bin = serializeToBinary(val, BASIC_TYPES.f32);
 			assert.equal(bin.byteLength, 4);
 			let num = deserializeFromBinary(bin, BASIC_TYPES.f32);
-			assert.equal(num, val);
+			assert.ok(Math.abs(num - val) < 0.0001);
 		});
 
 		it('type f64', () => {
 			let val = 2008.0925;
-			let bin = serializeToBinary(Math.PI, BASIC_TYPES.f64);
+			let bin = serializeToBinary(val, BASIC_TYPES.f64);
 			assert.equal(bin.byteLength, 8);
 			let num = deserializeFromBinary(bin, BASIC_TYPES.f64);
 			assert.equal(num, val);
