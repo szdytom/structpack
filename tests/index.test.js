@@ -1,7 +1,7 @@
 import { BASIC_TYPES, serializeToBinary, deserializeFromBinary } from '../lib/index.mjs';
 import assert from 'node:assert/strict';
 
-export function areArrayBuffersEqual(buffer1, buffer2) {
+function areArrayBuffersEqual(buffer1, buffer2) {
 	if (buffer1.byteLength !== buffer2.byteLength) {
 		return false;
 	}
@@ -15,6 +15,18 @@ export function areArrayBuffersEqual(buffer1, buffer2) {
 		}
 	}
 
+	return true;
+}
+
+function areSetsEqual(set1, set2) {
+	if (set1.size !== set2.size) {
+		return false;
+	}
+	for (const item of set1) {
+		if (!set2.has(item)) {
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -245,6 +257,14 @@ describe('binary-struct', () => {
 			assert.equal(bin.byteLength, 8);
 			let num = deserializeFromBinary(bin, BASIC_TYPES.DateTime);
 			assert.equal(num.toISOString(), val.toISOString());
+		});
+
+		it('type Set', () => {
+			const type = BASIC_TYPES.set(BASIC_TYPES.u8);
+			let val = new Set([1, 2, 3, 7]);
+			let bin = serializeToBinary(val, type);
+			let set = deserializeFromBinary(bin, type);
+			assert.ok(areSetsEqual(set, val));
 		});
 	});
 });

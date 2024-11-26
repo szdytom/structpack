@@ -69,7 +69,7 @@ serializeToBinary(value, type)
 ### `deserializeFromBinary`
 
 ```js
-deserializeFromBinary(buffer, type)
+deserializeFromBinary(bufferOrView, type)
 ```
 
 ### Types
@@ -114,6 +114,9 @@ BASIC_TYPES.FixedArray(type, length)
 
 // Map (accepts a Map object, not a plain object!)
 BASIC_TYPES.map(keyType, valueType)
+
+// Set (accepts a Set object)
+BASIC_TYPES.set(valueType)
 
 // Raw Buffer (with fixed length)
 BASIC_TYPES.raw(length)
