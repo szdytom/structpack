@@ -19,7 +19,7 @@
 	"description": "A lightweight library for binary serialization and deserialization of custom JavaScript classes in a declative way",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/szdytom/structpack.git"
+		"url": "git+https://github.com/szdytom/structpack.git"
 	},
 	"scripts": {
 		"test": "mocha tests"
