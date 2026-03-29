@@ -99,6 +99,9 @@ BASIC_TYPES.f64
 // Strings
 BASIC_TYPES.str
 
+// Length-prefixed ArrayBuffer
+BASIC_TYPES.arrayBuffer
+
 // Misc
 BASIC_TYPES.void // It does nothing, can be used as a placeholder
 BASIC_TYPES.bool

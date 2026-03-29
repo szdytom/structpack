@@ -1,7 +1,7 @@
 import { CompoundTypeHandler } from './type-handler.js';
 import { isBaseTypeHandler, type BaseTypeHandler, type TypeLike, type TypeWithTypedef } from './type-handlers/contracts.js';
 
-export { BASIC_TYPES, DeserializedResult, CompoundTypeHandler } from './type-handler.js';
+export { BASIC_TYPES, DeserializedResult, CompoundTypeHandler, ArrayBufferHandler } from './type-handler.js';
 export type { BaseTypeHandler } from './type-handler.js';
 
 /**

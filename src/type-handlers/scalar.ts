@@ -12,6 +12,32 @@ function assertSafeOffset(view: DataView, offset: number, bytes = 0): void {
 	}
 }
 
+export class ArrayBufferHandler implements BaseTypeHandler<ArrayBuffer> {
+	sizeof(value: ArrayBuffer): number {
+		return value.byteLength + 4;
+	}
+
+	serialize(view: DataView, offset: number, value: ArrayBuffer): number {
+		assertSafeOffset(view, offset, 4 + value.byteLength);
+		view.setUint32(offset, value.byteLength, true);
+		offset += 4;
+		const bytes = new Uint8Array(value);
+		for (let i = 0; i < bytes.length; i += 1) {
+			view.setUint8(offset + i, bytes[i]!);
+		}
+		return offset + bytes.length;
+	}
+
+	deserialize(view: DataView, offset: number): DeserializedResult<ArrayBuffer> {
+		assertSafeOffset(view, offset, 4);
+		const length = view.getUint32(offset, true);
+		offset += 4;
+		assertSafeOffset(view, offset, length);
+		const buffer = new Uint8Array(view.buffer, offset, length).slice().buffer;
+		return new DeserializedResult(buffer, offset + length);
+	}
+}
+
 export class Int8Handler implements BaseTypeHandler<number> {
 	sizeof(_value: number): number {
 		return 1;

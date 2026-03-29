@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BASIC_TYPES, serializeToBinary, deserializeFromBinary } from '../dist/index.js';
+import { BASIC_TYPES, ArrayBufferHandler, serializeToBinary, deserializeFromBinary } from '../dist/index.js';
 
 function areArrayBuffersEqual(buffer1: ArrayBuffer | Uint8Array, buffer2: ArrayBuffer | Uint8Array): boolean {
 	if (buffer1.byteLength !== buffer2.byteLength) {
@@ -51,6 +51,20 @@ class Point {
 
 describe('binary-struct', () => {
 	describe('serializeToBinary', () => {
+		it('type arrayBuffer (ArrayBufferHandler)', () => {
+			const value = new Uint8Array([0x01, 0x02, 0x03, 0x04]).buffer;
+			const res = serializeToBinary(value, new ArrayBufferHandler());
+			const ans = new Uint8Array([0x04, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04]);
+			expect(areArrayBuffersEqual(res, ans)).toBe(true);
+		});
+
+		it('type arrayBuffer (BASIC_TYPES.arrayBuffer)', () => {
+			const value = new Uint8Array([0x10, 0x20, 0x30]).buffer;
+			const res = serializeToBinary(value, BASIC_TYPES.arrayBuffer);
+			const ans = new Uint8Array([0x03, 0x00, 0x00, 0x00, 0x10, 0x20, 0x30]);
+			expect(areArrayBuffersEqual(res, ans)).toBe(true);
+		});
+
 		it('type i8', () => {
 			const res = serializeToBinary(-123, BASIC_TYPES.i8);
 			const ans = new Uint8Array([0x85]);
@@ -137,6 +151,13 @@ describe('binary-struct', () => {
 	});
 
 	describe('deserializeFromBinary', () => {
+		it('type arrayBuffer', () => {
+			const binaryData = new Uint8Array([0x03, 0x00, 0x00, 0x00, 0xaa, 0xbb, 0xcc]).buffer;
+			const res = deserializeFromBinary(binaryData, BASIC_TYPES.arrayBuffer) as ArrayBuffer;
+			const ans = new Uint8Array([0xaa, 0xbb, 0xcc]).buffer;
+			expect(areArrayBuffersEqual(res, ans)).toBe(true);
+		});
+
 		it('type i8', () => {
 			const binaryData = new Uint8Array([0x85]).buffer;
 			expect(deserializeFromBinary(binaryData, BASIC_TYPES.i8)).toBe(-123);

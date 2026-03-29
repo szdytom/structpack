@@ -1,5 +1,6 @@
 import { type TypeLike } from './contracts.js';
 import {
+	ArrayBufferHandler,
 	Int8Handler,
 	Int16Handler,
 	Int32Handler,
@@ -40,6 +41,7 @@ export const BASIC_TYPES = {
 	bool: new BoolHandler(),
 	void: new VoidHandler(),
 	str: new StringHandler(),
+	arrayBuffer: new ArrayBufferHandler(),
 	DateTime: new DateHandler(),
 
 	array: (type: TypeLike) => new DynamicArrayHandler(type),
