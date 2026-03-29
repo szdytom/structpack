@@ -246,4 +246,50 @@ describe('binary-struct', () => {
 			expect(areSetsEqual(set, val)).toBe(true);
 		});
 	});
+
+	describe('api compatibility aliases', () => {
+		it('fixedArray alias uses (type, length)', () => {
+			const res = serializeToBinary([0x1770, 0x3c3a, 0x9012], BASIC_TYPES.fixedArray(BASIC_TYPES.u16, 3));
+			const ans = new Uint8Array([0x70, 0x17, 0x3a, 0x3c, 0x12, 0x90]);
+			expect(areArrayBuffersEqual(res, ans)).toBe(true);
+		});
+
+		it('stringMap alias creates map with string keys', () => {
+			const type = BASIC_TYPES.stringMap(BASIC_TYPES.u16);
+			const value = new Map([['a', 20], ['b', 40]]);
+			const res = serializeToBinary(value, type);
+			expect(deserializeFromBinary(res, type)).toEqual(value);
+		});
+	});
+
+	describe('runtime validation', () => {
+		it('throws on out-of-bounds fixed length raw deserialize', () => {
+			const binaryData = new Uint8Array([0x3c, 0x3d, 0x3e]).buffer;
+			expect(() => deserializeFromBinary(new DataView(binaryData), BASIC_TYPES.raw(4))).toThrow(/Out-of-bounds/);
+		});
+
+		it('throws on wrong fixed array length when serializing', () => {
+			const type = BASIC_TYPES.FixedArray(3, BASIC_TYPES.u16);
+			expect(() => serializeToBinary([1, 2], type)).toThrow(/expects exactly 3 elements/);
+		});
+
+		it('throws on non-map input for map handler', () => {
+			const type = BASIC_TYPES.map(BASIC_TYPES.str, BASIC_TYPES.u8);
+			expect(() => serializeToBinary({ a: 1 } as unknown as Map<unknown, unknown>, type)).toThrow(/expects a Map/);
+		});
+
+		it('throws on non-set input for set handler', () => {
+			const type = BASIC_TYPES.set(BASIC_TYPES.u8);
+			expect(() => serializeToBinary([1, 2, 3] as unknown as Set<unknown>, type)).toThrow(/expects a Set/);
+		});
+
+		it('throws on invalid date input', () => {
+			expect(() => serializeToBinary(new Date('invalid'), BASIC_TYPES.DateTime)).toThrow(/invalid Date/);
+		});
+
+		it('throws on malformed string payload length', () => {
+			const binaryData = new Uint8Array([0x05, 0x00, 0x00, 0x00, 0x61, 0x62]).buffer;
+			expect(() => deserializeFromBinary(new DataView(binaryData), BASIC_TYPES.str)).toThrow(/Out-of-bounds/);
+		});
+	});
 });

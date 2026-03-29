@@ -22,6 +22,12 @@ Run the tests before commiting your changes:
 npm test
 ```
 
+Run type checks as well:
+
+```bash
+npm run typecheck
+```
+
 ## Code Style
 
 In most cases, your IDE can automatically format your code so it won't be too much work. Please follow the following points:

@@ -14,12 +14,12 @@ export class DeserializedResult<T = unknown> {
 	}
 }
 
-export type TypeWithTypedef = {
-	new (...args: never[]): object;
-	typedef: readonly { field: string; type: TypeLike }[];
+export type TypeWithTypedef<T extends object = Record<string, unknown>> = {
+	new (...args: never[]): T;
+	typedef: readonly { field: Extract<keyof T, string>; type: TypeLike }[];
 };
 
-export type TypeLike = BaseTypeHandler | TypeWithTypedef;
+export type TypeLike<T = unknown> = BaseTypeHandler<T> | TypeWithTypedef<Record<string, unknown>> | (T extends object ? TypeWithTypedef<T> : never);
 
 export function isBaseTypeHandler(value: unknown): value is BaseTypeHandler {
 	return !!value

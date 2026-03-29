@@ -1,6 +1,6 @@
 # structpack
 
-A lightweight library for binary serialization and deserialization of custom JavaScript classes in a declative way.
+A lightweight library for binary serialization and deserialization of custom JavaScript classes in a declarative way.
 
 ## Features
 
@@ -50,7 +50,7 @@ class Person {
 }
 
 // Serialize an instance of Person to binary
-// Returns a Buffer in Node.js (Polyfilled in browser)
+// Returns an ArrayBuffer
 const binary = serializeToBinary(new Person('Alice', 30, ['Bob', 'Charlie']), Person);
 
 // Deserialize the binary to an instance of Person
@@ -79,7 +79,7 @@ deserializeFromBinary(bufferOrView, type)
 It supports the following basic types:
 
 ```js
-// Integers with different sizes, repersented as Number in JavaScript
+// Integers with different sizes, represented as Number in JavaScript
 BASIC_TYPES.i8
 BASIC_TYPES.u8
 BASIC_TYPES.i16
@@ -87,7 +87,7 @@ BASIC_TYPES.u16
 BASIC_TYPES.i32
 BASIC_TYPES.u32
 
-// 64-bit integers are represented as BigInt in JavaScript, IT DON"T ACCEPT NUMBERS!
+// 64-bit integers are represented as BigInt in JavaScript, IT DOESN'T ACCEPT NUMBERS!
 // Refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
 BASIC_TYPES.i64
 BASIC_TYPES.u64
@@ -105,14 +105,15 @@ BASIC_TYPES.bool
 BASIC_TYPES.DateTime // Date object
 ```
 
-There're also some compound types with arguments:
+There are also some compound types with arguments:
 
 ```js
 // Dynamic Array
 BASIC_TYPES.array(type)
 
 // Fixed Array
-BASIC_TYPES.FixedArray(type, length)
+BASIC_TYPES.FixedArray(length, type) // existing API
+BASIC_TYPES.fixedArray(type, length) // alias for readability
 
 // Map (accepts a Map object, not a plain object!)
 BASIC_TYPES.map(keyType, valueType)
@@ -124,7 +125,8 @@ BASIC_TYPES.set(valueType)
 BASIC_TYPES.raw(length)
 
 // String Map (with string keys, functionally equivalent to map(BASIC_TYPES.str, valueType), but can be slightly faster)
-BASIC_TYPES.stringMap(valueType)
+BASIC_TYPES.StringMap // Map<string, string>
+BASIC_TYPES.stringMap(valueType) // Map<string, valueType>
 ```
 
 Anything that is not a basic type must be defined with a `typedef` array.
@@ -270,7 +272,7 @@ You can also call the `deserialize` method directly, but usually you don't need 
 When you are defining a custom type, It's sometimes convenient to delegate to another type. For example, let's say for some reason we want to serialize an object into JSON and save it as a string.
 
 ```js
-// See examples/delegate.js
+// See examples/delegrate.js
 import { BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
 
 class JSONHandler {
@@ -304,6 +306,12 @@ console.log(deserialized); // { a: 1, b: 'hello' }
 
 - The serialization and deserialization process is not destroying the original object, so if you modify the object after serialization, the deserialization process will not be able to detect the changes.
 - The serialization and deserialization process is not designed to handle circular references, so if you have a circular reference in your object, the serialization process will not be able to handle it and it will go into a dead loop.
+
+## Runtime validation
+
+- Compound handlers validate input shape (`Map`, `Set`, arrays, fixed lengths).
+- Scalar and compound handlers validate offsets and bounds for read/write operations.
+- Invalid usage throws explicit `TypeError`/`RangeError` messages to make debugging easier.
 
 ## Contributing
 

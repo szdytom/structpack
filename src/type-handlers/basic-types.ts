@@ -44,8 +44,10 @@ export const BASIC_TYPES = {
 
 	array: (type: TypeLike) => new DynamicArrayHandler(type),
 	FixedArray: (n: number, type: TypeLike) => new FixedArrayHandler(n, type),
+	fixedArray: (type: TypeLike, n: number) => new FixedArrayHandler(n, type),
 	raw: (n: number) => new RawBufferHandler(n),
 	map: (k: TypeLike, v: TypeLike) => new MapHandler(k, v),
 	set: (v: TypeLike) => new SetHandler(v),
 	StringMap: new MapHandler(new StringHandler(), new StringHandler()),
+	stringMap: (valueType: TypeLike) => new MapHandler(new StringHandler(), valueType),
 };
