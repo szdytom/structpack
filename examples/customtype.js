@@ -1,11 +1,11 @@
 // First, you import these classes
-import { BaseTypeHandler, DeserializedResult, BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
+import { DeserializedResult, BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
 
 // UUID library
 import { stringify, parse, v4 as uuidv4 } from 'uuid';
 
 // Then, you define your custom type handle extending BaseTypeHandler
-class UUIDHandler extends BaseTypeHandler {
+class UUIDHandler {
 	// In this case, we don't need a constructor
 	// But you can use it to pass arguments to your custom type
 

@@ -1,6 +1,6 @@
-import { BaseTypeHandler, BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
+import { BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
 
-class JSONHandler extends BaseTypeHandler {
+class JSONHandler {
 	sizeof(value) {
 		const json = JSON.stringify(value);
 		return BASIC_TYPES.str.sizeof(json); // delegate to the string handler

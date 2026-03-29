@@ -15,6 +15,8 @@ A lightweight library for binary serialization and deserialization of custom Jav
 npm i --save structpack
 ```
 
+`structpack` is published as an ESM package and includes bundled TypeScript declarations.
+
 ## Quick Start
 
 Here is an example of how to use structpack to serialize and deserialize a class:
@@ -136,13 +138,13 @@ You can also define your own types with a custom serializer and deserializer. Fo
 ```js
 // See examples/customtype.js
 // First, you import these classes
-import { BaseTypeHandler, DeserializedResult, BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
+import { DeserializedResult, BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
 
 // UUID library
 import { stringify, parse, v4 as uuidv4 } from 'uuid';
 
-// Then, you define your custom type handle extending BaseTypeHandler
-class UUIDHandler extends BaseTypeHandler {
+// Then, define any object that implements sizeof/serialize/deserialize
+class UUIDHandler {
 	// In this case, we don't need a constructor
 	// But you can use it to pass arguments to your custom type
 
@@ -269,9 +271,9 @@ When you are defining a custom type, It's sometimes convenient to delegate to an
 
 ```js
 // See examples/delegate.js
-import { BaseTypeHandler, BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
+import { BASIC_TYPES, serializeToBinary, deserializeFromBinary } from 'structpack';
 
-class JSONHandler extends BaseTypeHandler {
+class JSONHandler {
 	sizeof(value) {
 		const json = JSON.stringify(value);
 		return BASIC_TYPES.str.sizeof(json); // delegate to the string handler
