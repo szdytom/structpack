@@ -34,4 +34,5 @@ jobs:
       with:
         node-version: 22.x
     - run: npm i
+    - run: npm run build
     - run: npm run typecheck
